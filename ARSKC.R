@@ -199,7 +199,7 @@ find_a <- function(w, E_res, k , c, dataset, cl_rest_a){
 
 
 
-
+##algorithm_1
 RSKOD <- function(k , c, lambda, dataset, w){
   w_path <- NULL
   iter_1 <- 0
@@ -222,6 +222,13 @@ RSKOD <- function(k , c, lambda, dataset, w){
   return(list(w_path = w_path, okm_it = test_res$okm_iter,t_iter = iter_1, w_f = w_f, spare_okm_cluster = test_res$cluster_res_final ,
               spare_okm_E = test_res$E, spare_okm_outlier_idx = test_res$outlier_idx))
 }
+
+
+
+
+
+
+
 
 
 #Gap
@@ -276,29 +283,6 @@ cal_Gap <- function(dataset, k, c, lambda){
 }
 
 
-# gap_statistic_lam <- function(dataset, k ,lambda, c) {
-#   w_init <- rep(1/sqrt(ncol(dataset)), ncol(dataset))
-#   
-#   sample_run <- RSKOD(k = k , c = c, lambda = lambda, dataset = dataset, w = w_init)
-#   
-#   
-#   x_star <- dataset - sample_run$spare_okm_E
-#   
-#   
-#   B = 45
-#   wk <- sum(kmeans(x_star, centers = k)$withinss)
-#   
-#   rand_wks <- numeric(B)
-#   for(b in 1:B) {
-#     rand_data <- matrix(rnorm(nrow(x_star) * ncol(x_star)), nrow = nrow(x_star))
-#     rand_wks[b] <- sum(kmeans(rand_data, centers = k)$withinss)
-#   }
-#   
-#   gap <- log(mean(rand_wks)) - log(wk)
-#   Gap <- ifelse((sample_run$t_iter >= 15)|(sample_run$okm_it >= 50), NA, gap)
-#   
-#   return(c(gap = Gap))
-# }
 
 
 gap_statistic_lam <- function(dataset, k ,lambda, c) {
@@ -360,7 +344,7 @@ select_hp <- function(c_var, lam_var, dataset,lambda_in){
 
 
 
-
+#total function of algorithm_2
 select_hp(c_var = c_var, lam_var = lam_var, dataset = dataset, lambda_in = 3.1)
 
 
@@ -415,8 +399,6 @@ select_hp(c_var = c_var, lam_var = lam_var, dataset = dataset, lambda_in = 3.1)
 #  gap_serise[j] <- cal_Gap(dataset = dataset, k = 3, c = aa, lambda = bb)$Gap
 #}
 
-#cbind(data.var, gap_serise)
-#which.max(gap_serise)
 
 
 
