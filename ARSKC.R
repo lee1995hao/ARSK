@@ -49,7 +49,7 @@ library(tidyr)
 
 
 
-
+#distance
 Eudist<-function(x,y){
   distance<-sqrt(sum((x-y)^2))
   return (distance)
@@ -141,6 +141,7 @@ soft_threshold <- function(x, c = c) {
 
 
 
+#variable selection
 find_a <- function(w, E_res, k , c, dataset, cl_rest_a){
   tata <- c()
   for(i in 1:length(w)){
@@ -196,9 +197,6 @@ find_a <- function(w, E_res, k , c, dataset, cl_rest_a){
 
 
 
-
-
-
 ##algorithm_1
 RSKOD <- function(k , c, lambda, dataset, w){
   w_path <- NULL
@@ -226,12 +224,7 @@ RSKOD <- function(k , c, lambda, dataset, w){
 
 
 
-
-
-
-
-
-#Gap
+#algorithm_2_Gap_altern
 GetWCSS <- function(x, Cs, ws=NULL){
   wcss.perfeature <- numeric(ncol(x))
   for(k in unique(Cs)){
@@ -312,14 +305,8 @@ gap_statistic_lam <- function(dataset, k ,lambda, c) {
 
 
 
-
-
-
 c_var <- sort(2^seq(log2(10), log2(200), length = 10))
 lam_var <- c(1.1:10.1)
-
-
-
 
 
 ##Alternating Optimization
@@ -342,10 +329,12 @@ select_hp <- function(c_var, lam_var, dataset,lambda_in){
   
 }
 
-
-
 #total function of algorithm_2
 select_hp(c_var = c_var, lam_var = lam_var, dataset = dataset, lambda_in = 3.1)
+
+
+
+
 
 
 
