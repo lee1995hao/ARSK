@@ -82,6 +82,24 @@ theta_ipod_kmean_involve_lasso <- function(dataset, lambda, k, w){
     return((x - m)*max(0,1 - ((sqrt(sum((x - m)^2)))^-1)*lambda))
   }
   
+  
+  #scad
+  S <- function(x, lambda) {
+    if (x > lambda) {
+      return(x - lambda)
+    } else if (abs(x) <= lambda) {
+      return(0)
+    } else if (x < -lambda) {
+      return(x + lambda)
+    }
+  }
+  
+  new_E <- function(x, m ,lambda){
+    norm_2 <- sqrt(sum((x - m)^2))
+    return((x - m) / norm_2 * S(sqrt(sum((x - m)^2)), lambda))
+  }
+  
+  
   ##initial parameter 
   kmean_dataset <- dataset - E
   kmean_dataset <- sweep(kmean_dataset, 2, w, "*")
@@ -389,6 +407,4 @@ select_hp(c_var = c_var, lam_var = lam_var, dataset = dataset, lambda_in = 3.1)
 #}
 
 
-
-
-
+a <-c(1,2,3)
