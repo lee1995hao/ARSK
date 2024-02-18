@@ -4,7 +4,6 @@ library(RSKC)
 library(magrittr)
 library(dplyr)
 library(ggplot2)
-library(tidyr)
 
 
 
