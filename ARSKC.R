@@ -269,7 +269,7 @@ cal_Gap <- function(dataset, k, c, lambda){
   o_all <- sum(sample_run$w_f*GetWCSS(x_star, sample_run$spare_okm_cluster)$bcss.perfeature)
 
 
-  nperms <- 45
+  nperms <- 25
   permx <- list()
   nnonzerows <- NULL
   for(i in 1:nperms){
@@ -306,7 +306,7 @@ gap_statistic_lam <- function(dataset, k ,lambda, c) {
   x_star <- sweep(x_star, 2, sample_run$w_f,"*")
   
   
-  B = 45
+  B = 25
   wk <- sum(kmeans(x_star, centers = k)$withinss)
   
   rand_wks <- numeric(B)
