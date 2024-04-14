@@ -396,6 +396,58 @@ select_hp(c_var = c_var, lam_var = lam_var, dataset = dataset, lambda_in = 3.1)
 
 
 
+##Alternating Optimization
+# select_real_data <- NULL
+# loop_e <- function(j){
+#   set.seed(12 + j*34)
+#   data <- make_culster_data(n = c(50,50,50), dimen = 50, noise_v = 45, number = 0.3)
+#   dataset <- data$dataset[,-ncol(data$dataset)]
+#   w_init <- rep(1/sqrt(ncol(dataset)), ncol(dataset))
+#   
+#   
+#   select_res <- select_hp(c_var = c_var, lam_var = lam_var, dataset = dataset, lambda_in = 2.1)
+#   
+#   
+#   sample_run_1 <- RSKOD(k = 3, c = select_res$b_c, lambda = select_res$b_lamda, dataset = dataset, w = w_init)
+#   
+#   real_idx <- data$dataset["i"]
+#   predicted_labels_1 <- as.factor(sample_run_1$spare_okm_cluster[-data$outliner_idx])
+#   actual_labels <- as.factor(real_idx[-data$outliner_idx,])
+#   CER_1 <- CER(predicted_labels_1,actual_labels)
+#   
+#   outlier_model_1 <- sample_run_1$spare_okm_outlier_idx
+#   number_o_1 <- length(outlier_model_1)
+#   o_TRP_1 <- length(which(data$outliner_idx %in% outlier_model_1))/length(data$outliner_idx)
+#   
+#   
+#   weigth_each_feature_1 <- as.vector(sample_run_1$w_f)
+#   o_feature_1 <- length(which(weigth_each_feature_1 != 0))
+#   
+#   
+#   real_z_v <- which(apply(data$center, 2, mean) != 0)
+#   pre_z_v_1 <- which(weigth_each_feature_1 != 0)
+#   v_TPR_1 <- length(which(real_z_v%in%pre_z_v_1))
+#   return(c(CER_1, number_o_1, o_TRP_1, o_feature_1, v_TPR_1, best_c = select_res$b_c, best_lam = select_res$b_lamda))
+# }
+# results <- NULL
+# 
+# 
+# results <- mclapply(
+#   1:20,
+#   function(i) {
+#     tryCatch({
+#       loop_e(i)
+#     }, error = function(e) {
+#       cat("simulation: ", i, "failed: ",conditionMessage(e) )
+#     }
+#     )
+#     
+#   },
+#   mc.cores=7
+# )
+
+
+
 ######grip
 #for(j in 1:nrow(data.var)){
 #  cat("========== case", j)
@@ -406,4 +458,4 @@ select_hp(c_var = c_var, lam_var = lam_var, dataset = dataset, lambda_in = 3.1)
 #}
 
 
-a <-c(1,2,3)
+
