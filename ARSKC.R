@@ -355,7 +355,7 @@ select_hp(c_var = c_var, lam_var = lam_var, dataset = dataset, lambda_in = 3.1)
 
 
 
-
+#다 코어
 #select_real_data <- NULL
 #for(j in 1:100){ 
 #  set.seed(12 + j*34)
@@ -443,7 +443,7 @@ select_hp(c_var = c_var, lam_var = lam_var, dataset = dataset, lambda_in = 3.1)
 #     )
 #     
 #   },
-#   mc.cores=7
+#   mc.cores = 10
 # )
 
 
