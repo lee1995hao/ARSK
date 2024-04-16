@@ -1,4 +1,4 @@
-# Adaptively Robust and Sparse K-means Clustering
+# ARSK
 
 This repository provides R code implementing Adaptively Robust and Sparse K-means Clustering, as the following paper proposes.
 
