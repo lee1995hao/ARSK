@@ -455,28 +455,3 @@ results <- mclapply(
   },
   mc.cores=7
 )
-
-
-# data <- make_culster_data(n = c(50,50,50), dimen = 50, noise_v = 45, number = 0.1)
-
-GAP_10 <- data.frame(select_real_data)
-names(GAP_10) <- c("CER","outlier_number","outliner_TRP","nonzero_feature","nonzero_feature_TRP")
-write.csv(x = GAP_10,file = "res_hp_1.csv")
-apply(GAP_10,2,mean)
-apply(select_real_data,2,sd)
-
-
-
-######grip
-for(j in 1:nrow(data.var)){
-  j = 1
-  cat("========== case", j)
-  aa <- data.var[j, "c"]
-  bb <- data.var[j, "lam"]
-  
-  gap_serise[j] <- cal_Gap(dataset = dataset, k = 3, c = aa, lambda = bb)$Gap
-}
-
-cbind(data.var, gap_serise)
-which.max(gap_serise)
-plot(cbind(c_var,gap_serise), type = "l")
