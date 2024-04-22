@@ -47,20 +47,24 @@ theta_ipod_kmean_involve_lasso <- function(dataset, lambda, k, w){
   
   
   #scad
-  S <- function(x, lambda) {
-    if (x > lambda) {
-      return(x - lambda)
-    } else if (abs(x) <= lambda) {
-      return(0)
-    } else if (x < -lambda) {
-      return(x + lambda)
+  new_E<- function(x, m, lambda, a = 3.7) {
+    nd <- x - m
+    vector_norm <- sqrt(sum(nd^2))
+    beta_thresholded <- nd
+    if (vector_norm <= lambda) {
+
+      beta_thresholded <- rep(0, length(nd))
+    } else if (vector_norm <= 2 * lambda) {
+
+      beta_thresholded <- (1 - lambda / vector_norm) * nd
+    } else if (vector_norm <= a * lambda) {
+
+      shrinkage_factor <- a / (a - 1) * (1 - lambda / ((a - 1) * vector_norm))
+      beta_thresholded <- shrinkage_factor * nd
     }
+    return(beta_thresholded)
   }
   
-  new_E <- function(x, m ,lambda){
-    norm_2 <- sqrt(sum((x - m)^2))
-    return((x - m) / norm_2 * S(sqrt(sum((x - m)^2)), lambda))
-  }
   
   
   ##initial parameter 
