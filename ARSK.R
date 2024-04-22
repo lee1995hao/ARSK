@@ -40,27 +40,33 @@ theta_ipod_kmean_involve_lasso <- function(dataset, lambda, k, w){
   
   E <- E_ini
   
-  ##hard thresholding of E
+  ##soft thresholding of E
   new_E <- function(x, m, lambda){
     return((x - m)*max(0,1 - ((sqrt(sum((x - m)^2)))^-1)*lambda))
   }
   
   
   #scad
+  S <- function(z, lambda) {
+    if (z > lambda) {
+      return(z - lambda)
+    } else if (abs(z) <= lambda) {
+      return(0)
+    } else if (z < -lambda) {
+      return(z + lambda)
+    }
+  }
+  
   new_E <- function(x,m, lambda, gamma = 3.7) {
     z <- x - m
     z_norm <- sqrt(sum(z^2))
     if (z_norm <= 2*lambda) {
       return(S(z_norm, lambda) * z / z_norm)
     } else if (2*lambda < z_norm && z_norm <= gamma*lambda) {
-      return((gamma-1)/(gamma-2) * z - lambda/(gamma-2) * z / z_norm)
+      return(S(z_norm,gamma*lambda/(gamma - 1))*((gamma-1)/(gamma-2))*(z / z_norm))
     } else if (z_norm > gamma*lambda) {
       return(z)
     }
-  }
-  
-  S <- function(z, lambda) {
-    return(pmax(z - lambda, 0))
   }
   
   
