@@ -8,6 +8,10 @@ library(tidyr)
 library(trimcluster)
 library(GPArotation)
 
+source("data-generator.R")
+source("ARSKC.R")
+
+
 #algorithm_2_Gap_altern
 GetWCSS <- function(x, Cs, ws=NULL){
   wcss.perfeature <- numeric(ncol(x))

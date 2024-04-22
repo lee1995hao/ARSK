@@ -9,8 +9,8 @@ library(trimcluster)
 library(GPArotation)
 
 
-
-
+source("data-generator.R")
+source("gap-alternative.R")
 
 #distance
 Eudist<-function(x,y){

@@ -7,6 +7,9 @@ library(ggplot2)
 library(tidyr)
 library(trimcluster)
 library(GPArotation)
+source("ARSKC.R")
+source("gap-alternative.R")
+
  
  ###data generator variable indenpent
  make_culster_data <- function(n, dimen, noise_v, number, plt = T){
