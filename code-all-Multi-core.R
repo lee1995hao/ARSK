@@ -128,6 +128,18 @@ soft_threshold <- function(x, c = c) {
   sign(x) * pmax(abs(x) - c, 0)
 }
 
+scadThreshold <- function(entry, lambda, a) {
+  e1 <- abs(entry) <= 2 * lambda
+  e2 <- abs(entry) > 2 * lambda & abs(entry) <= a * lambda
+  
+  entry[e1] <- ifelse(
+    abs(entry[e1]) - lambda > 0, sign(entry[e1]) * (abs(entry[e1]) - lambda), 0
+  )
+  
+  entry[e2] <- ((a - 1) * entry[e2] - sign(entry[e2]) * a * lambda) / (a - 2)
+  
+  return(entry)
+}
 
 
 find_a <- function(w, E_res, k , c, dataset, cl_rest_a){
@@ -177,6 +189,7 @@ find_a <- function(w, E_res, k , c, dataset, cl_rest_a){
   a_j <- apply(all_distence, 2, sum) - apply(each_dim_matrix, 2, sum)
   
   new_a_j <- soft_threshold(a_j, c = c)
+  new_a_j <- scadThreshold(a_j, c ,2.7)
   new_a_j[is.na(new_a_j)] <- 0
   w <- new_a_j/norm(new_a_j, type = "2")
   
