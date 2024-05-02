@@ -15,6 +15,25 @@ Eudist<-function(x,y){
 }
 
 
+#thresholding function
+soft_threshold <- function(x, c = c) {
+  sign(x) * pmax(abs(x) - c, 0)
+}
+
+
+scadThreshold <- function(entry, lambda, a) {
+  e1 <- abs(entry) <= 2 * lambda
+  e2 <- abs(entry) > 2 * lambda & abs(entry) <= a * lambda
+  
+  entry[e1] <- ifelse(
+    abs(entry[e1]) - lambda > 0, sign(entry[e1]) * (abs(entry[e1]) - lambda), 0
+  )
+  
+  entry[e2] <- ((a - 1) * entry[e2] - sign(entry[e2]) * a * lambda) / (a - 2)
+  
+  return(entry)
+}
+
 
 ##function for OKM
 theta_ipod_kmean_involve_lasso <- function(dataset, lambda, k, w){
@@ -36,39 +55,25 @@ theta_ipod_kmean_involve_lasso <- function(dataset, lambda, k, w){
   
   E <- E_ini
   
-  
+  ##soft thresholding of E
+  new_E <- function(x, m, lambda){
+    return((x - m)*max(0,1 - ((sqrt(sum((x - m)^2)))^-1)*lambda))
+  }
   
   
   #scad
-  S <- function(z, lambda) {
-    if (z > lambda) {
-      return(z - lambda)
-    } else if (abs(z) <= lambda) {
-      return(0)
-    } else if (z < -lambda) {
-      return(z + lambda)
-    }
+  scadd <- function(x_values, lambda1 ,a){
+    return(x_values - scadThreshold(x_values, lambda1 ,a))
   }
   
   new_E <- function(x,m, lambda, gamma = 3.7) {
     z <- x - m
     z_norm <- sqrt(sum(z^2))
-    if (z_norm <= 2*lambda) {
-      return(S(z_norm, lambda) * z / z_norm)
-    } else if (2*lambda < z_norm && z_norm <= gamma*lambda) {
-      return(S(z_norm,gamma*lambda/(gamma - 1))*((gamma-1)/(gamma-2))*(z / z_norm))
-    } else if (z_norm > gamma*lambda) {
-      return(z)
-    }
-  }
-  
-  
-  # ##soft thresholding of E
-  new_E <- function(x, m, lambda){
-    return((x - m)*max(0,1 - ((sqrt(sum((x - m)^2)))^-1)*lambda))
-  }
-  
 
+    return(z*(1-(scadd(z_norm, lambda1 ,a = gamma)/z_norm)))
+  }
+  
+  
   
   ##initial parameter 
   kmean_dataset <- dataset - E
@@ -100,7 +105,7 @@ theta_ipod_kmean_involve_lasso <- function(dataset, lambda, k, w){
     kmean_res <- kmeans(kmean_dataset, k)
     cluster_res_final <- kmean_res$cluster
     mu_new <- kmean_res$center
-    if(Eudist(mu_new, mu_old) < 0.001 || iter == 100)break
+    if(Eudist(mu_new, mu_old) < 0.01 || iter == 200)break
     mu_old <- mu_new
     E <- E_n
     iter = iter + 1
@@ -123,25 +128,8 @@ theta_ipod_kmean_involve_lasso <- function(dataset, lambda, k, w){
 
 
 
-###lasso part
-soft_threshold <- function(x, c = c) {
-  sign(x) * pmax(abs(x) - c, 0)
-}
 
-scadThreshold <- function(entry, lambda, a) {
-  e1 <- abs(entry) <= 2 * lambda
-  e2 <- abs(entry) > 2 * lambda & abs(entry) <= a * lambda
-  
-  entry[e1] <- ifelse(
-    abs(entry[e1]) - lambda > 0, sign(entry[e1]) * (abs(entry[e1]) - lambda), 0
-  )
-  
-  entry[e2] <- ((a - 1) * entry[e2] - sign(entry[e2]) * a * lambda) / (a - 2)
-  
-  return(entry)
-}
-
-
+#variable selection
 find_a <- function(w, E_res, k , c, dataset, cl_rest_a){
   tata <- c()
   for(i in 1:length(w)){
@@ -190,7 +178,6 @@ find_a <- function(w, E_res, k , c, dataset, cl_rest_a){
   
   new_a_j <- soft_threshold(a_j, c = c)
   new_a_j <- scadThreshold(a_j, c ,2.7)
-  new_a_j[is.na(new_a_j)] <- 0
   w <- new_a_j/norm(new_a_j, type = "2")
   
   return(w)
@@ -198,11 +185,7 @@ find_a <- function(w, E_res, k , c, dataset, cl_rest_a){
 
 
 
-
-
-##500(no400 ，200 ，150 ; 180 is ok)c increase the quantity of 0 will also increase
-
-##first need to find the all parameters once time \lambda K ,S
+##algorithm
 RSKOD <- function(k , c, lambda, dataset, w){
   w_path <- NULL
   iter_1 <- 0
@@ -213,7 +196,7 @@ RSKOD <- function(k , c, lambda, dataset, w){
     w_a <- find_a(w = w, E_res =  test_res$E, k = k, c = c, dataset = dataset, cl_rest_a = test_res$cluster_res_final)
     judge_w <- sum(abs(w_a - w))/sum(abs(w))
     cat(judge_w)
-    if(judge_w < 0.01 || iter_1 == 10)break
+    if(judge_w < 0.01 || iter_1 == 50)break
     w <- w_a
     j_w_ser <- c(judge_w, j_w_ser)
     w_path <- rbind(w, w_path)
@@ -225,7 +208,6 @@ RSKOD <- function(k , c, lambda, dataset, w){
   return(list(w_path = w_path, okm_it = test_res$okm_iter,t_iter = iter_1, w_f = w_f, spare_okm_cluster = test_res$cluster_res_final ,
               spare_okm_E = test_res$E, spare_okm_outlier_idx = test_res$outlier_idx))
 }
-
 
 
 
