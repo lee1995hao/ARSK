@@ -19,6 +19,25 @@ Eudist<-function(x,y){
 }
 
 
+#thresholding function
+soft_threshold <- function(x, c = c) {
+  sign(x) * pmax(abs(x) - c, 0)
+}
+
+
+scadThreshold <- function(entry, lambda, a) {
+  e1 <- abs(entry) <= 2 * lambda
+  e2 <- abs(entry) > 2 * lambda & abs(entry) <= a * lambda
+  
+  entry[e1] <- ifelse(
+    abs(entry[e1]) - lambda > 0, sign(entry[e1]) * (abs(entry[e1]) - lambda), 0
+  )
+  
+  entry[e2] <- ((a - 1) * entry[e2] - sign(entry[e2]) * a * lambda) / (a - 2)
+  
+  return(entry)
+}
+
 
 ##function for OKM
 theta_ipod_kmean_involve_lasso <- function(dataset, lambda, k, w){
@@ -47,26 +66,15 @@ theta_ipod_kmean_involve_lasso <- function(dataset, lambda, k, w){
   
   
   #scad
-  S <- function(z, lambda) {
-    if (z > lambda) {
-      return(z - lambda)
-    } else if (abs(z) <= lambda) {
-      return(0)
-    } else if (z < -lambda) {
-      return(z + lambda)
-    }
+  scadd <- function(x_values, lambda1 ,a){
+    return(x_values - scadThreshold(x_values, lambda1 ,a))
   }
   
   new_E <- function(x,m, lambda, gamma = 3.7) {
     z <- x - m
     z_norm <- sqrt(sum(z^2))
-    if (z_norm <= 2*lambda) {
-      return(S(z_norm, lambda) * z / z_norm)
-    } else if (2*lambda < z_norm && z_norm <= gamma*lambda) {
-      return(S(z_norm,gamma*lambda/(gamma - 1))*((gamma-1)/(gamma-2))*(z / z_norm))
-    } else if (z_norm > gamma*lambda) {
-      return(z)
-    }
+
+    return(z*(1-(scadd(z_norm, lambda1 ,a = gamma)/z_norm)))
   }
   
   
@@ -123,24 +131,6 @@ theta_ipod_kmean_involve_lasso <- function(dataset, lambda, k, w){
 
 
 
-###lasso part
-soft_threshold <- function(x, c = c) {
-  sign(x) * pmax(abs(x) - c, 0)
-}
-
-
-scadThreshold <- function(entry, lambda, a) {
-  e1 <- abs(entry) <= 2 * lambda
-  e2 <- abs(entry) > 2 * lambda & abs(entry) <= a * lambda
-  
-  entry[e1] <- ifelse(
-    abs(entry[e1]) - lambda > 0, sign(entry[e1]) * (abs(entry[e1]) - lambda), 0
-  )
-  
-  entry[e2] <- ((a - 1) * entry[e2] - sign(entry[e2]) * a * lambda) / (a - 2)
-  
-  return(entry)
-}
 
 
 #variable selection
@@ -199,7 +189,7 @@ find_a <- function(w, E_res, k , c, dataset, cl_rest_a){
 
 
 
-##algorithm_1
+##algorithm
 RSKOD <- function(k , c, lambda, dataset, w){
   w_path <- NULL
   iter_1 <- 0
@@ -222,7 +212,6 @@ RSKOD <- function(k , c, lambda, dataset, w){
   return(list(w_path = w_path, okm_it = test_res$okm_iter,t_iter = iter_1, w_f = w_f, spare_okm_cluster = test_res$cluster_res_final ,
               spare_okm_E = test_res$E, spare_okm_outlier_idx = test_res$outlier_idx))
 }
-
 
 
 
