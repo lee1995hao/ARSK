@@ -73,7 +73,6 @@ theta_ipod_kmean_involve_lasso <- function(dataset, lambda, k, w){
   new_E <- function(x,m, lambda, gamma = 3.7) {
     z <- x - m
     z_norm <- sqrt(sum(z^2))
-
     return(z*(1-(scadd(z_norm, lambda1 ,a = gamma)/z_norm)))
   }
   
