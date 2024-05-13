@@ -180,7 +180,7 @@ find_a <- function(w, E_res, k , c, dataset, cl_rest_a){
   a_j <- apply(all_distence, 2, sum) - apply(each_dim_matrix, 2, sum)
   
   new_a_j <- soft_threshold(a_j, c = c)
-  new_a_j <- scadThreshold(a_j, c ,2.7)
+  new_a_j <- scadThreshold(a_j, c ,3.7)
   w <- new_a_j/norm(new_a_j, type = "2")
   
   return(w)
