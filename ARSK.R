@@ -59,28 +59,26 @@ theta_ipod_kmean_involve_lasso <- function(dataset, lambda, k, w){
   
   E <- E_ini
   
-  ##soft thresholding of E
-  new_E <- function(x, m, lambda){
+  # # ##hard thresholding of E
+  # new_E <- function(x, m, lambda){
+  #   return((x - m)*max(0,1 - ((sqrt(sum((x - m)^2)))^-1)*lambda))
+  # }
+  
+  #scad
+  new_E_s <- function(x, m, lambda){
     return((x - m)*max(0,1 - ((sqrt(sum((x - m)^2)))^-1)*lambda))
   }
   
-  
-  #scad
-# new_E_s <- function(x, m, lambda){
-#   return((x - m)*max(0,1 - ((sqrt(sum((x - m)^2)))^-1)*lambda))
-# }
-# new_E <- function(x, m, lambda, a = 3.7){
-#   z_n <- sqrt(sum((x - m)^2))
-#   if (z_n <= 2 * lambda) {
-#     return(new_E_s(x, m, lambda))
-#   } else if (2 * lambda < z_n & z_n <= a * lambda) {  
-#     return((a - 1) / (a - 2) * new_E_s(x, m, (a * lambda) / (a - 1)))
-#   } else {
-#     return(x - m)
-#   }
-# }
-  
-  
+  new_E <- function(x, m, lambda, a = 3.7){
+    z_n <- sqrt(sum((x - m)^2))
+    if (z_n <= 2 * lambda) {
+      return(new_E_s(x, m, lambda))
+    } else if (2 * lambda < z_n & z_n <= a * lambda) {  
+      return((a - 1) / (a - 2) * new_E_s(x, m, (a * lambda) / (a - 1)))
+    } else {
+      return(x - m)
+    }
+  }
   
   ##initial parameter 
   kmean_dataset <- dataset - E
@@ -112,7 +110,7 @@ theta_ipod_kmean_involve_lasso <- function(dataset, lambda, k, w){
     kmean_res <- kmeans(kmean_dataset, k)
     cluster_res_final <- kmean_res$cluster
     mu_new <- kmean_res$center
-    if(Eudist(mu_new, mu_old) < 0.01 || iter == 200)break
+    if(Eudist(mu_new, mu_old) < 0.001 || iter == 100)break
     mu_old <- mu_new
     E <- E_n
     iter = iter + 1
@@ -130,6 +128,12 @@ theta_ipod_kmean_involve_lasso <- function(dataset, lambda, k, w){
   # return part
   return(list(okm_iter = iter ,E = E, k = k, mu = mu_old, outlier_idx = judge_outliner_idx, cluster_res_final = cluster_res_final))
 }
+
+
+
+
+
+
 
 
 
