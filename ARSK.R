@@ -59,7 +59,7 @@ theta_ipod_kmean_involve_lasso <- function(dataset, lambda, k, w){
   
   E <- E_ini
   
-  # # ##hard thresholding of E
+  # # ##soft thresholding of E
   # new_E <- function(x, m, lambda){
   #   return((x - m)*max(0,1 - ((sqrt(sum((x - m)^2)))^-1)*lambda))
   # }
