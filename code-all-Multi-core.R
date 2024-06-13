@@ -29,7 +29,7 @@ scadThreshold <- function(entry, lambda, a) {
     abs(entry[e1]) - lambda > 0, sign(entry[e1]) * (abs(entry[e1]) - lambda), 0
   )
   
-  entry[e2] <- ((a - 1) * entry[e2] - sign(entry[e2]) * a * lambda)
+  entry[e2] <- ((a - 1) * entry[e2] - sign(entry[e2]) * a * lambda)/(a - 2)
   
   return(entry)
 }
