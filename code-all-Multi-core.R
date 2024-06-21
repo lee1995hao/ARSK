@@ -306,29 +306,6 @@ cal_Gap <- function(dataset, k, c, lambda){
 }
 
 
-# gap_statistic_lam <- function(dataset, k ,lambda, c) {
-#   w_init <- rep(1/sqrt(ncol(dataset)), ncol(dataset))
-#   
-#   sample_run <- RSKOD(k = k , c = c, lambda = lambda, dataset = dataset, w = w_init)
-#   
-#   
-#   x_star <- dataset - sample_run$spare_okm_E
-#   
-#   
-#   B = 20
-#   wk <- sum(kmeans(x_star, centers = k)$withinss)
-#   
-#   rand_wks <- numeric(B)
-#   for(b in 1:B) {
-#     rand_data <- matrix(rnorm(nrow(x_star) * ncol(x_star)), nrow = nrow(x_star))
-#     rand_wks[b] <- sum(kmeans(rand_data, centers = k)$withinss)
-#   }
-#   
-#   gap <- log(mean(rand_wks)) - log(wk)
-#   Gap <- ifelse((sample_run$t_iter >= 15)|(sample_run$okm_it >= 50), NA, gap)
-#   
-#   return(c(gap = Gap))
-# }
 
 
 gap_statistic_lam <- function(dataset, k ,lambda, c) {
