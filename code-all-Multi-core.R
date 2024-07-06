@@ -327,7 +327,7 @@ gap_statistic_lam <- function(dataset, k ,lambda, c) {
     rand_wks[b] <- sum(kmeans(rand_data, centers = k)$withinss)
   }
   
-  gap <- log(mean(rand_wks)) - log(wk)
+  gap <- -(log(mean(rand_wks)) - log(wk))
   Gap <- ifelse((sample_run$t_iter >= 15)|(sample_run$okm_it >= 50), NA, gap)
   
   return(c(gap = Gap))
@@ -371,7 +371,7 @@ select_hp <- function(c_var, lam_var, dataset,lambda_in){
     gap_serise_l[j] <- gap_statistic_lam(dataset = dataset, k = 3, c = b_c, lambda = lam_var[j])
   }
   
-  b_lamda <- lam_var[which.min(gap_serise_l)]
+  b_lamda <- lam_var[which.max(gap_serise_l)]
   
   return(list(b_lamda = b_lamda, b_c = b_c,gap_serise_l,gap_serise_c))
   
