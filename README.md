@@ -1,7 +1,7 @@
 # ARSK
 
 This repository provides R code implementing 
-Li, H., Sugasawa, S. and Katayama, S. (2024). Adaptively robust and sparse K-means clustering.
+Li, H., Sugasawa, S. and Katayama, S. (2024+). Adaptively robust and sparse K-means clustering. Transactions on Machine Learning Research.
 
 The repository includes the following files.
 
