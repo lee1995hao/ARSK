@@ -167,12 +167,9 @@ def find_W(W, dataset, E_res, cluster_result, cluster_center, lam_2):
 def total_ARSKC(dataset, lam_1, lam_2, K, max_iter=400, tolerance=1e-1):
     w_init = np.ones(dataset.shape[1]) / np.sqrt(dataset.shape[1])
     W = w_init
-    # 迭代优化
     for iter_W in range(max_iter):
-        # 鲁棒性K均值聚类
         one_result = robust_kmean(dataset=dataset, W=W, lam_1=lam_1, K=K)
 
-        # 寻找新的权重
         W_n_1 = find_W(
             W=W,
             dataset=dataset,
