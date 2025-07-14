@@ -130,8 +130,6 @@ def robust_kmean(dataset,lam_1,K,W):
 
 
 
-w_init = np.ones(dataset.shape[1]) / np.sqrt(dataset.shape[1])
-result_sample_run_1 = robust_kmean(dataset = dataset, lam_1 = 20,K = 2, W = w_init)
 
 
 
