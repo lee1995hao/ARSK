@@ -175,9 +175,10 @@ def total_ARSKC(dataset, lam_1, lam_2, K):
     return {"weight":W_n_1, "center":one_result["center"],"label":one_result["label_dict"]}
 
 
-data_g_1 = data_generator([10,10],dim=10,noise_v=2,number=0.1,plot_d=False)
-dataset = data_g_1["data"]
-total_ARSKC(dataset=dataset,lam_1 = 20,lam_2 = 1.1,K = 2)
+
+# data_g_1 = data_generator([10,10],dim=10,noise_v=2,number=0.1,plot_d=False)
+# dataset = data_g_1["data"]
+# total_ARSKC(dataset=dataset,lam_1 = 20,lam_2 = 1.1,K = 2)
 
 
 
