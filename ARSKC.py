@@ -41,10 +41,6 @@ def data_generator(n ,dim,noise_v, number,plot_d = True):
 
 
 
-data_g_1 = data_generator([10,10],dim=10,noise_v=2,number=0.1,plot_d=False)
-dataset = data_g_1["data"]
-
-
 
 #algorithm of ARSKC
 def distance_point(x,y):
@@ -130,10 +126,6 @@ def robust_kmean(dataset,lam_1,K,W):
 
 
 
-
-
-
-
 def find_W(W, dataset, E_res, cluster_result, cluster_center, lam_2):
     recover_W = np.array([W_rocover(i) for i in W])
 
@@ -162,25 +154,20 @@ def find_W(W, dataset, E_res, cluster_result, cluster_center, lam_2):
 
 
 
-def total_ARSKC(dataset, lam_1, lam_2, K, max_iter=400, tolerance=1e-1):
+def total_ARSKC(dataset, lam_1, lam_2, K):
     w_init = np.ones(dataset.shape[1]) / np.sqrt(dataset.shape[1])
     W = w_init
-    for iter_W in range(max_iter):
+    while True:
         one_result = robust_kmean(dataset=dataset, W=W, lam_1=lam_1, K=K)
 
-        W_n_1 = find_W(
-            W=W,
-            dataset=dataset,
-            E_res=one_result["E_est"],
-            cluster_result=one_result["label_dict"],
-            cluster_center=one_result["center"],
-            lam_2=lam_2
-        )
+        W_n_1 = find_W(W=W,dataset=dataset,E_res=one_result["E_est"],cluster_result=one_result["label_dict"],
+                       cluster_center=one_result["center"],lam_2=lam_2)
 
         judge_w = np.sum(np.abs(W_n_1 - W)) / np.sum(np.abs(W))
+
         print(iter_W)
 
-        if judge_w < tolerance:
+        if judge_w <= 1e-1 or iter_W == 400:
             break
 
         W = W_n_1
@@ -188,8 +175,9 @@ def total_ARSKC(dataset, lam_1, lam_2, K, max_iter=400, tolerance=1e-1):
     return {"weight":W_n_1, "center":one_result["center"],"label":one_result["label_dict"]}
 
 
-
-# total_ARSKC(dataset=dataset,lam_1 = 20,lam_2 = 2,K = 2)
+data_g_1 = data_generator([10,10],dim=10,noise_v=2,number=0.1,plot_d=False)
+dataset = data_g_1["data"]
+total_ARSKC(dataset=dataset,lam_1 = 20,lam_2 = 1.1,K = 2)
 
 
 
