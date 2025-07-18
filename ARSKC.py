@@ -167,7 +167,7 @@ def total_ARSKC(dataset, lam_1, lam_2, K):
 
         print(iter_W)
 
-        if judge_w <= 1e-1 or iter_W == 400:
+        if judge_w <= 1e-1 or iter_W == 50:
             break
 
         W = W_n_1
