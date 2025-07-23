@@ -208,9 +208,9 @@ def GetWCSS(x, Cs, ws=None):
     return result
 
 
-def cal_Gap(dataset, k, c, lambda_):
+def cal_Gap(dataset, k, lambda_1, lambda_2):
     
-    sample_run = total_ARSKC(dataset=dataset, lam_1=c, lam_2=lambda_, K=k)
+    sample_run = total_ARSKC(dataset=dataset, lam_1=lambda_1, lam_2=lambda_2, K=k)
     
     if 'E_est' in sample_run:
         x_star = dataset - sample_run['E_est']
@@ -231,7 +231,7 @@ def cal_Gap(dataset, k, c, lambda_):
     
     permtots = []
     for K in range(nperms):
-        perm_out = total_ARSKC(dataset=permx[K], lam_1=c, lam_2=lambda_, K=k)
+        perm_out = total_ARSKC(dataset=permx[K], lam_1=lambda_1, lam_2=lambda_2, K=k)
         if 'E_est' in sample_run:
             perm_data = dataset - sample_run['E_est']
         else:
@@ -256,10 +256,16 @@ def cal_Gap(dataset, k, c, lambda_):
     return {
         'Gap': Gap,
         'k': k,
-        'c': c,
-        'lambda': lambda_,
+        'lambda_1': lambda_1,
+        'lambda_2': lambda_2,
         'B_model': sample_run
     }
+
+
+
+
+
+
 
 
 
