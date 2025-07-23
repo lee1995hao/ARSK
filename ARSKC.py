@@ -126,6 +126,9 @@ def robust_kmean(dataset,lam_1,K,W):
 
 
 
+
+
+
 def find_W(W, dataset, E_res, cluster_result, cluster_center, lam_2):
     recover_W = np.array([W_rocover(i) for i in W])
 
@@ -157,6 +160,7 @@ def find_W(W, dataset, E_res, cluster_result, cluster_center, lam_2):
 def total_ARSKC(dataset, lam_1, lam_2, K):
     w_init = np.ones(dataset.shape[1]) / np.sqrt(dataset.shape[1])
     W = w_init
+    iter = 0
     while True:
         one_result = robust_kmean(dataset=dataset, W=W, lam_1=lam_1, K=K)
 
@@ -165,26 +169,94 @@ def total_ARSKC(dataset, lam_1, lam_2, K):
 
         judge_w = np.sum(np.abs(W_n_1 - W)) / np.sum(np.abs(W))
 
-        print(iter_W)
-
-        if judge_w <= 1e-1 or iter_W == 400:
+        if judge_w <= 1e-1 or iter == 400:
             break
 
         W = W_n_1
-
+        iter = iter + 1                             
     return {"weight":W_n_1, "center":one_result["center"],"label":one_result["label_dict"]}
 
 
 
-# data_g_1 = data_generator([10,10],dim=10,noise_v=2,number=0.1,plot_d=False)
-# dataset = data_g_1["data"]
-# total_ARSKC(dataset=dataset,lam_1 = 20,lam_2 = 1.1,K = 2)
+data_g_1 = data_generator([10,10],dim=10,noise_v=2,number=0.1,plot_d=False)
+dataset = data_g_1["data"]
+total_ARSKC(dataset=dataset,lam_1 = 20,lam_2 = 1.1,K = 2)
 
 
 
+def GetWCSS(x, Cs, ws=None):
+    wcss_perfeature = np.zeros(x.shape[1])
+    for k in np.unique(Cs):
+        whichers = (Cs == k)
+        if np.sum(whichers) > 1:
+            cluster_data = x[whichers, :]
+            centered_data = cluster_data - np.mean(cluster_data, axis=0)
+            wcss_perfeature += np.sum(centered_data**2, axis=0)
+    
+    centered_x = x - np.mean(x, axis=0)
+    total_ss_perfeature = np.sum(centered_x**2, axis=0)
+    bcss_perfeature = total_ss_perfeature - wcss_perfeature
+    
+    result = {
+        'wcss_perfeature': wcss_perfeature,
+        'wcss': np.sum(wcss_perfeature),
+        'bcss_perfeature': bcss_perfeature
+    }
+    
+    if ws is not None:
+        result['wcss_ws'] = np.sum(wcss_perfeature * ws)
+    
+    return result
 
 
+def cal_Gap(dataset, k, lambda_1, lambda_2 ):
+    sample_run = total_ARSKC(dataset=dataset, lam_1=lambda_1, lam_2=lambda_2, K=k)
 
+    if 'E_est' in sample_run:
+        x_star = dataset - sample_run['E_est']
+    else:
+        x_star = dataset    
+    
+    wcss_result = GetWCSS(x_star, sample_run['label'])
+    o_all = np.sum(sample_run['weight'] * wcss_result['bcss_perfeature'])
+    
+    nperms = 25
+    permx = []
+    
+    for i in range(nperms):
+        permuted = np.zeros_like(dataset)
+        for j in range(dataset.shape[1]):
+            permuted[:, j] = np.random.permutation(dataset[:, j])
+        permx.append(permuted)
 
-
-
+    permtots = []
+    for K in range(nperms):
+        perm_out = total_ARSKC(dataset=permx[K], lam_1=lambda_1, lam_2=lambda_2, K=k)
+        
+        if 'E_est' in sample_run:
+            perm_data = dataset - sample_run['E_est']
+        else:
+            perm_data = dataset
+            
+        perm_bcss = GetWCSS(perm_data, sample_run['label'])['bcss_perfeature']
+        permtots.append(np.sum(perm_out['weight'] * perm_bcss))
+    
+    t_iter = sample_run.get('t_iter', 0)
+    okm_it = sample_run.get('okm_it', 0)
+    
+    if (t_iter >= 15) or (okm_it >= 50):
+        Gap = None  # Python中用None代替R的NA
+    else:
+        permtots = np.array(permtots)
+        if np.any(permtots <= 0):
+            Gap = None
+        else:
+            Gap = np.log(o_all) - np.mean(np.log(permtots))
+    
+    return {
+        'Gap': Gap,
+        'k': k, 
+        'lambda_1': lambda_1,
+        'lambda_2': lambda_2,
+        'B_model': sample_run
+    }
